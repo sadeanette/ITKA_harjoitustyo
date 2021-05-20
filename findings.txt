@@ -1,7 +1,7 @@
 ## Harjoitustyöraportti
 
 Palauttajat (max 3): Säde Latikka
-Pisteitä yhteensä: 3.
+Pisteitä yhteensä: 6.
 
 ## Ongelma 1
 Tyyppi:   Polkuinjektio
@@ -42,5 +42,48 @@ vain omia tiedostojaan.
 1pt vikatyypin eliminoimisesta
 
 ## Ongelma 2
+Tyyppi:   Shell-injektio
+Sijainti: login()
+Kuvaus:
+
+Käyttäjä voi kirjautua toiselle käyttäjälle pelkästään
+käyttäjänimellä antamatta salasanaa.
+
+### Esimerkkihyökkäys: 
+
+1) Kirjoita komentoriville:
+   "curl http://localhost:5000/login?user=sue\"
+   Tai selaimeen:
+   "http://localhost:5000/login?user=sue\"
+2) Tulos: Pääset onnistuneesti kirjautumaan suen tilille
+
+### Korjaus:
+
+Commit: Problem 2 fixed logging shell injection
+
+Korjasin tämän muokkaamalla login() - funktiota siten, että kirjautumista
+koskeva ehtolause testaa lisäksi onko syötetty käyttäjänimi käyttäjien
+listassa. Korjaus on tehty kuitenkin niin, että mahdollisesti eri syötteitä
+kokeileva käyttäjä ei saa selville, että tietty käyttäjänimi on kyseisessä
+palvelussa.
+
+Korjaus toimii, koska ehtolause tarkistaa käyttäjänimen olemassaolon.
+Ehtolauseessa ei siis tule tilannetta, jossa users.get(username)
+palauttaa arvon None, joka olemattoman salasanan kanssa olisi saman
+arvoinen.
+
+Korjaus estää uuden kirjautumisen shell injektion syntymisen, sillä
+nyt ehtolause ei saa "true"-arvoa kahdesta "None"-arvosta. Samalla
+kirjautumissivulla ei myöskään anneta tietoa muiden käyttäjänimien
+olemisesta palvelimella, vaan eri syötteillä ilmoitetaan aina
+"Login failed!"
+
+### Pisteet(3pt)
+
+1pt vian löytämisestä
+1pt vian korjaamisesta
+1pt vikatyypin eliminoimisesta
+
+Ongelma 3
 
 ...

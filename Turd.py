@@ -63,7 +63,7 @@ def login():
     password = request.args.get('password')
     if username:
 
-        if users.get(username) == password:
+        if username in users and users.get(username) == password:
             
             resp = make_response("""
               <!doctype html>
