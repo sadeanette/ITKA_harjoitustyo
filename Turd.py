@@ -159,7 +159,8 @@ def delete_file():
     """
 
     username = request.cookies.get('username')
-    if not username: return redirect(url_for('login'))
+    if not username:
+        return redirect(url_for('login'))
     path = configuration['web_root'] + "/" + username
 
     user_file = request.args.get('file')
@@ -177,7 +178,7 @@ def delete_file():
         <a href="/logout">log out</a>
         ''' % files
     else:
-        os.remove(configuration['web_root'] + "/" + user_file)
+        os.remove(configuration['web_root'] + "/" + username + "/" + user_file)
         return '''
         <!doctype html>
         <title>File deleted</title>
