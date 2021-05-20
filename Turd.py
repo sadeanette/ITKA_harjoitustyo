@@ -164,6 +164,8 @@ def delete_file():
     path = configuration['web_root'] + "/" + username
 
     user_file = request.args.get('file')
+    abs = os.path.abspath(user_file)
+    user_file = abs.replace("/app/", "")
 
     if user_file == '*':
         files = os.listdir(path)

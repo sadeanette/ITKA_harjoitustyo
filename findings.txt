@@ -1,6 +1,6 @@
 ## Harjoitustyöraportti
 
-Palauttajat (max 3): N.N,  N.N ja N.N
+Palauttajat (max 3): Säde Latikka
 Pisteitä yhteensä: 3.
 
 ## Ongelma 1
@@ -21,13 +21,19 @@ jonkin järjestelmätiedoston.
 
 ### Korjaus:
 
-Commit: <git hash>
+Commit: Problem 1 delete_file path injection
 
-Korjasin tämän näin... 
+Korjasin tämän os.path.abspath - metodilla, joka normalisoi käyttäjän syötteenä
+antaman polun absoluuttiseksi. Polun sisältö on kokonaan käyttäjän syöte ja
+"/app/", joka tulee kuitenkin poistaa, jotta lopuksi polku osoittaa oikeaan tiedostoon.
 
-Korjaus toimii koska... 
+Korjaus toimii, koska normalisoitu polku poistaa esimerkiksi "../" ja muut
+symboliset merkinnät. Käyttäjä ei siis pääse hyppimään tiedostoissa taaksepäin.
 
-Korjaus estää uuden polkuinjektion syntymisen, sillä uutta reittiä luotaessa...
+Korjaus estää uuden polkuinjektion syntymisen, sillä uutta reittiä luotaessa
+se osoittaa aina käyttäjän omaan hakemistoon. Polkuinjektiota yrittäessä
+käyttäjälle näkyy virheviesti ja poistoa ei tehdä. Käyttäjä voi siis poistaa
+vain omia tiedostojaan.
 
 ### Pisteet(3pt)
 
