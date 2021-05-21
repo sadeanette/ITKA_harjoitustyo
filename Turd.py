@@ -1,5 +1,5 @@
 import os
-from flask import Flask, send_file, request, redirect, url_for, make_response
+from flask import Flask, send_file, request, redirect, url_for, make_response, escape
 import yaml
 import queue
 import subprocess
@@ -52,7 +52,7 @@ t.start()
 
 ## Here are the system users. Until we have more than 10 users we will
 ## just hardcode them here:
-users = {"lion": "Y_SFX", "sue": "qwwerty", "sam": "ghghghg"}
+users = {"lion": "Y_SFX", "sue": "qwwerty", "sam": "ghghghg", "None": "asdfg"}
 
 @app.route('/login')
 def login():
@@ -221,16 +221,17 @@ def upload_file():
             raise Exception('No file part')
             return redirect(request.url)
         thefile = request.files['file']
-        if thefile.filename == '':
+        filename = escape(thefile.filename)
+        if filename == '':
             raise Exception('No selected file')
             return redirect(request.url)
         if thefile:
-            checkPath(thefile.filename)
-            target_path = path + '/' + thefile.filename
+            checkPath(filename)
+            target_path = path + '/' + filename
 
             # Mark the fle initially as suspicious. The checker thread will
             # remove this flag
-            suspicious_file_log.add(thefile.filename)
+            suspicious_file_log.add(filename)
 
             thefile.save(target_path)
             thefile.close()

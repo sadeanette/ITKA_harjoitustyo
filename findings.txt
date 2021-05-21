@@ -1,7 +1,7 @@
 ## Harjoitustyöraportti
 
 Palauttajat (max 3): Säde Latikka
-Pisteitä yhteensä: 12.
+Pisteitä yhteensä: 15.
 
 ## Ongelma 1
 Tyyppi:   Polkuinjektio
@@ -171,5 +171,53 @@ käyttäjän nimen. Käyttäjän tietoja ei ole ollenkaan tallennettu evästeese
 1pt vikatyypin eliminoimisesta
 
 ## Ongelma 5
+Tyyppi:   XSS (HTML-injektio)
+Sijainti: upload_file()
+Kuvaus:
+
+Käyttäjä voi komentotulkin kautta ladata sivulle tiedoston,
+jonka nimen hän on muuttanut niin, että sisältö tulkitaan
+HTML rakenteena. Käyttäjä voi esimerkiksi luoda napin, jota
+painamalla hän voi suorittaa monenlaisia haitallisia toimintoja.
+
+### Esimerkkihyökkäys: 
+
+1) Luo käyttäjä käyttäjänimelle "None"
+2) Kirjaudu sisään käyttäjälle "None"
+3) Tämän jälkeen kirjoita komentoriville:
+   "curl -v --cookie "username=AFG45P2ZRW" -F "file=@\"testi.png\";filename=
+     \""<"button onmouseover="alert(1)"">"\"" http://localhost:5000/upload_file"
+    Huom. usernamen argumentiksi nykyinen eväste
+4) Tulos: Sivulle syntyy nappi, josta hiiren päälle raahauksen
+   ansiosta tulee alert-boksi
+
+### Korjaus:
+
+Commit: Problem 5 fixed file upload XSS
+
+Korjasin tämän käsittelemällä tiedoston nimen flask.escape() -metodilla.
+convert the characters &, <, >, ‘, and ” in string s to HTML-safe
+sequences. Use this if you need to display text that might contain
+such characters in HTML
+
+Korjaus toimii, koska metodi muuntaa tiedoston nimen merkkijonossa
+esiintyvät merkit  &, <, >, ', ja " HTML turvalliseen muotoon.
+Kyseiset merkit näytetään sivulla pelkästään tekstinä, eikä merkit
+pääse muuttamaan sivun omaa HTML-rakennetta.
+
+Korjaus estää uuden XSS hyökkäyksen muodostumisen, sillä nyt
+merkkijono käsitellään flask-kirjaston escape-metodin mukaisesti.
+Tiedostoja voidaan ladata vain upload_file -sivulla ja
+hyökkääjä pääsee komentorivin kautta lähettämään tiedostoja, mutta ne
+hylätään, ja vaikka kyseiset merkkijonot kirjoitetaan tekstinä, ne
+tulkitaan sivustolla vain tekstinä.
+
+### Pisteet(3pt)
+
+1pt vian löytämisestä
+1pt vian korjaamisesta
+1pt vikatyypin eliminoimisesta
+
+## Ongelma 6
 
 ...
