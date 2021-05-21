@@ -1,7 +1,7 @@
 ## Harjoitustyöraportti
 
 Palauttajat (max 3): Säde Latikka
-Pisteitä yhteensä: 15.
+Pisteitä yhteensä: 18.
 
 ## Ongelma 1
 Tyyppi:   Polkuinjektio
@@ -219,5 +219,46 @@ tulkitaan sivustolla vain tekstinä.
 1pt vikatyypin eliminoimisesta
 
 ## Ongelma 6
+Tyyppi:   Polkuinjektio
+Sijainti: share_file()
+Kuvaus:
 
-...
+Käyttäjän ladatessa palveluun tiedosto sellaisella nimellä, jolla
+aiemmin jonkun muun käyttäjän toimesta on jaettu eri tiedosto,
+käyttäjän avatessa oma tiedostonsa sen tilalle tulee jaettu
+tiedosto.
+
+### Esimerkkihyökkäys: 
+
+1) Kirjaudu käyttäjällä "sam"
+2) Lataa palveluun tiedosto nimellä "testi.png"
+3) Jaa "testi.png"
+4) Kirjaudu sisään käyttäjällä "sue"
+5) Lataa palveluun eri tiedosto nimellä "testi.png"
+6) Tulos: suen tiedosto on korvautunut jaetulla tiedostolla.
+
+### Korjaus:
+
+Commit: Problem 6 fixed share file path injektion
+
+Korjasin tämän muokkaamalla tiedoston jakamista siten, että
+tiedostoa jaettaessa tiedoston nimeen liitetään omistajan
+käyttäjänimi.
+
+Korjaus toimii, koska nyt ohjelman yksityiset ja jaetut
+tiedostot on rakenteellisesti nimetty eri tavalla. Ohjelma
+ei etsiessään tiedostoa jaettujen tiedostojen listasta ota 
+tiedostoa vain nimen perusteella.
+
+Korjaus estää uuden polkuinjektion muodostumisen, sillä nyt
+vaikka tiedostot ovat saman nimisiä, ovat jaetut tiedostot nimetty
+eri tavalla. Palvelua käytettäessä yhdeltä selaimelta on kuitenkin
+otettava huomioon selaimen välimuisti, joka saattaa pitää tallessa
+aiemmin tallennettua sisältöä, joten eri käyttäjien tallentamat
+saman nimiset tiedostot saattavat viitata samaan tiedostoon. 
+
+### Pisteet(3pt)
+
+1pt vian löytämisestä
+1pt vian korjaamisesta
+1pt vikatyypin eliminoimisesta

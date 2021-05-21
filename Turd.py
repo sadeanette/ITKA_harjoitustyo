@@ -145,9 +145,9 @@ def share_file():
     user = str(request.cookies.get('username'))
     username = currentUsers.get(user)
     if not username: return redirect(url_for('login'))
-    path = configuration['web_root'] + "/" + username
+    path = configuration['web_root'] + "/"
 
-    user_file = request.args.get('file')
+    user_file = username+"/"+request.args.get('file')
 
     checkPath(path+"/"+user_file)
 
