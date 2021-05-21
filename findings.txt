@@ -1,7 +1,7 @@
 ## Harjoitustyöraportti
 
 Palauttajat (max 3): Säde Latikka
-Pisteitä yhteensä: 6.
+Pisteitä yhteensä: 9.
 
 ## Ongelma 1
 Tyyppi:   Polkuinjektio
@@ -84,6 +84,51 @@ olemisesta palvelimella, vaan eri syötteillä ilmoitetaan aina
 1pt vian korjaamisesta
 1pt vikatyypin eliminoimisesta
 
-Ongelma 3
+## Ongelma 3
+Tyyppi:   Shell-injektio
+Sijainti: checkerLoop(queue)
+Kuvaus:
+
+Käyttäjä voi ladata palveluun päätteettömän tiedoston ja koska
+tiedoston tiedot tulostetaan komentorivissä, hän voi tiedoston nimen
+avulla antaa komentoja shelliin ja esimerkiksi poistaa
+kaikki tiedostot tai lähettää omaan palveluunsa tietoja
+kyseisestä palvelusta, sen tiedostoista ja käyttäjistä.
+
+### Esimerkkihyökkäys: 
+
+1) Kirjaudu käyttäjälle sam.
+2) Lataa päätteetön tiedosto, jonka nimi on testi;ls
+3) Tulos: Saat tulostettua komentoriviin palvelun tiedostot
+   ja käytännössä voit antaa komentoriville mitä komentoja vain
+   muokkaamalla tekstiä "ls"
+
+### Korjaus:
+
+Commit: Problem 3 fixed filename shell injection
+
+Korjasin tämän muokkaamalla subprosess.run -metodia siten, että
+yhden kokonaisen merkkijonon sijaan se ottaa vastaan listan, jossa
+käyttäjän syöte on toisena alkiona. Näin siihen ei synny ylimääräisiä
+alkioita. Lisäksi kyseistä tulostetta ei tulosteta komentorivillä
+print() -metodissa.
+
+Korjaus toimii, koska käyttäjän syötettä ei enää tulkita
+komentorivin kautta, vaan se tulkitaan vain file-komennon
+argumenttina. Komentotulkkiin ei siis voi enää injektoida mitään.
+
+Korjaus estää uuden tiedoston kautta tehtävän shell injektion,
+sillä kyseistä toiminpidettä ei suoriteta enää komentotulkin kautta
+ja toiminto edelleen pysyy kuitenkin samanlaisena. Lisäksi tiedoston
+pääte tarkistetaan vielä heti alussa, joten päätteettömiä tai väärällä
+päätteellä olevia tiedostoja ei hyväksytä eteenpäin.
+
+### Pisteet(3pt)
+
+1pt vian löytämisestä
+1pt vian korjaamisesta
+1pt vikatyypin eliminoimisesta
+
+## Ongelma 4
 
 ...

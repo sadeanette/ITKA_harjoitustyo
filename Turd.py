@@ -29,19 +29,18 @@ def checkerLoop(queue):
         """
     while True:
         filename = queue.get()
-        res = subprocess.run(
-            "file %s" % filename,
-            shell=True,
-            timeout=15,
-            stdout=subprocess.PIPE)
-        res = res.stdout.decode('utf-8')
-        print(res)
-        if not ("PNG image data" in res
-                or "JPEG image data" in res):
+        res = ""
+        if (".png" in filename or ".jpeg" in filename or ".jpg" in filename):
+            res = subprocess.run(
+                ["file", filename],
+                timeout=15,
+                stdout=subprocess.PIPE)
+            res = res.stdout.decode('utf-8')
+        if ("PNG image data" in res or "JPEG image data" in res):
+            suspicious_file_log.remove(os.path.basename(filename))
+        else:
             os.remove(filename)
             bad_file_log.add(filename)
-        else:
-            suspicious_file_log.remove(os.path.basename(filename))
 
 
 # Start the background checker thread
