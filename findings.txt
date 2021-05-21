@@ -1,7 +1,7 @@
 ## Harjoitustyöraportti
 
 Palauttajat (max 3): Säde Latikka
-Pisteitä yhteensä: 9.
+Pisteitä yhteensä: 12.
 
 ## Ongelma 1
 Tyyppi:   Polkuinjektio
@@ -130,5 +130,46 @@ päätteellä olevia tiedostoja ei hyväksytä eteenpäin.
 1pt vikatyypin eliminoimisesta
 
 ## Ongelma 4
+Tyyppi:   Shell-injektio
+Sijainti: login(), logout(), share_file(), delete_file(),
+          upload_file(), serve_file()
+Kuvaus:
+
+Evästeiden avulla käyttäjä voi komentotulkin kautta päästä näkemään,
+poistamaan ja jakamaan aiemmin kirjautuneena olleen käyttäjän 
+tiedostoja ilman salasanaa.
+
+### Esimerkkihyökkäys: 
+
+1) Kirjaudu sisään käyttäjänä "lion".
+2) Kirjaudu ulos käyttäjältä "lion".
+2) Tämän jälkeen kirjoita komentoriville:
+   "curl -v --cookie "username=lion" http://localhost:5000/user_content"
+3) Tulos: Näet käyttäjän lion tiedostot
+
+### Korjaus:
+
+Commit: Problem 4 fixed cookie shell injection
+
+Korjasin tämän muokkaamalla evästeen asettamista siten, että eväste on
+käyttäjänimen sijaan satunnainen 10 merkin merkkijono, joka luodaan
+kirjautumisen yhteydessä.
+
+Korjaus toimii, koska nyt käyttäjän tietoihin ei pääse vain käyttäjän
+nimen kautta, vaan hyökkääjän tulisi tietää kirjautumisessa luodun
+satunnaisen merkkijonon sisältö. Käyttäjän nimi ei ole enää evästeen
+sisällössä.
+
+Korjaus estää uuden evästeiden kautta tehtävän shell injektion, sillä
+hyökkääjä ei voi päästä käyttäjän tilille vain asettamalla evästeeksi
+käyttäjän nimen. Käyttäjän tietoja ei ole ollenkaan tallennettu evästeeseen.
+
+### Pisteet(3pt)
+
+1pt vian löytämisestä
+1pt vian korjaamisesta
+1pt vikatyypin eliminoimisesta
+
+## Ongelma 5
 
 ...

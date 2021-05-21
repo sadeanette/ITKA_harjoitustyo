@@ -5,6 +5,8 @@ import queue
 import subprocess
 import threading
 import time
+import string
+import random
 
 
 # Load configuration file
@@ -20,6 +22,7 @@ bad_file_log = set()            # Set of known dangerous files in service
 suspicious_file_log = set()     # Set of unchecked files
 shared_files = {}               # Set of files that are shared to all users
 checker_queue = queue.LifoQueue(1000)   # Last-in-First-out queue for storing unchecked files
+currentUsers = {}               # Cookie selection for current users
 
 def checkerLoop(queue):
     """ This checks each incoming file. If they are not PNG files they
@@ -71,8 +74,15 @@ def login():
               You can now <a href="/user_content">check your files</a>
               """)
 
+            # creating random string
+            ran = ''.join(random.choices(
+                string.ascii_uppercase + string.digits, k=10))
+
+            # add cookie and the user in the list of current users
+            currentUsers[ran] = username
+
             # Set login cookie in the user browser
-            resp.set_cookie('username', username)
+            resp.set_cookie('username', ran)
 
             # Create directory for user files
             path = configuration['web_root'] + "/" + username
@@ -109,7 +119,8 @@ def login():
 @app.route('/logout')
 def logout():
     """ This will log out the current user """
-    username = request.cookies.get('username')
+    user = str(request.cookies.get('username'))
+    username = currentUsers.get(user)
     resp = make_response('''
             <!doctype html>
             <title>Log out</title>
@@ -117,6 +128,7 @@ def logout():
             User %s has been logged out
             ''' % username)
     resp.set_cookie('username', expires=0)
+    del currentUsers[user]
     return resp
 
 
@@ -130,7 +142,8 @@ def share_file():
     """ This route handler will allow users to share files
     """
 
-    username = request.cookies.get('username')
+    user = str(request.cookies.get('username'))
+    username = currentUsers.get(user)
     if not username: return redirect(url_for('login'))
     path = configuration['web_root'] + "/" + username
 
@@ -157,7 +170,8 @@ def delete_file():
         If the file is '*' all user files are deleted
     """
 
-    username = request.cookies.get('username')
+    user = str(request.cookies.get('username'))
+    username = currentUsers.get(user)
     if not username:
         return redirect(url_for('login'))
     path = configuration['web_root'] + "/" + username
@@ -197,7 +211,8 @@ def upload_file():
         If the request method is POST file is being uploaded. Otherwise
         we show a file upload prompt
     """
-    username = request.cookies.get('username')
+    user = str(request.cookies.get('username'))
+    username = currentUsers.get(user)
     if not username: return redirect(url_for('login'))
     path = configuration['web_root'] + "/" + username
 
@@ -244,7 +259,8 @@ def serve_file():
         If user gives a filename that file is sent to user, otherwise
         user is shown a file listing
     """
-    username = request.cookies.get('username')
+    user = str(request.cookies.get('username'))
+    username = currentUsers.get(user)
     if not username: return redirect(url_for('login'))
 
     user_file = request.args.get('file')
